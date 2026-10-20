@@ -1,12 +1,19 @@
 using UnityEngine;
 
-// 목표(Target)의 위치를 따라다니는 카메라
 public class CameraFollow : MonoBehaviour
 {
-    public Transform Target; // 따라갈 대상 (Player의 CameraPosition)
+    [SerializeField] private Transform _target;
+
+    private void Awake()
+    {
+        if (_target == null)
+        {
+            Debug.LogWarning("[CameraFollow] 카메라 타겟이 없습니다!!");
+        }
+    }
 
     private void LateUpdate()
     {
-        transform.position = Target.position;
+        transform.position = _target.position;
     }
 }
