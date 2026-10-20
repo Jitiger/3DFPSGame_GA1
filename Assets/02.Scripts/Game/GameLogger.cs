@@ -9,7 +9,7 @@ public static class GameLogger
         Debug.Log(message);
     }
 
-    public static void Info(object message)
+    public static void LogWarning(object message)
     {
         Debug.LogWarning(message);
     }
