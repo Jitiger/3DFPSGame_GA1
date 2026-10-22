@@ -1,20 +1,22 @@
 using UnityEngine;
 
-// 무언가에 부딛히면 폭발 이펙트를 남기고 사라지는 폭탄
+// 무언가에 부딪히면 폭발 이펙트를 남기고, 풀에서 다시 사용할 수 있게 비활성화한다.
 public class Bomb : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _explosionEffectPrefab;
 
-    // 다른 콜라이더와 부딛힌 순간 실행되는 메서드
     private void OnCollisionEnter(Collision collision)
     {
+        // 같은 물리 프레임에 여러 번 충돌해도 폭발은 한 번만 처리한다.
+        if (gameObject.activeSelf == false)
+        {
+            return;
+        }
+
         ParticleSystem effect = Instantiate(_explosionEffectPrefab, transform.position, Quaternion.identity);
         effect.Play();
 
-        Debug.Log(collision.gameObject.name);
-
-        // Todo. 오브젝트 풀링 적용
-        // 폭탄을 삭제한다.
-        Destroy(gameObject);
+        // 목록에는 그대로 남겨두고, 다음에 꺼낼 수 있게 비활성화한다.
+        gameObject.SetActive(false);
     }
 }

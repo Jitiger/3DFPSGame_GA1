@@ -11,9 +11,11 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private float _damage = 10f;
     [SerializeField] private float _fireInterval = 0.1f;
     [SerializeField] private float _maxBullet = 50f;
-    [SerializeField] private float _reloadingTime = 0.5f;
+    [SerializeField] private float _reloadingTime = 3f;
+
     private float _fireTimer = 0f;
     private float _currentBullet = 0f;
+    private Coroutine _reloadCoroutine;
 
     private void Awake()
     {
@@ -31,20 +33,34 @@ public class PlayerGunFire : MonoBehaviour
             _currentBullet--;
             _fireTimer = _fireInterval;
             Shoot();
+
+            // 이 방식은 이 모노비헤이비어가 등록한 모든 코루틴을 실행 취소
+            //StopAllCoroutines();
+            if (_reloadCoroutine != null)
+            {
+                StopCoroutine(_reloadCoroutine);
+                Debug.Log("재장전 취소");
+                _reloadCoroutine = null;
+            }
         }
 
         // 2. R키 누르면 총알 재장전
-        if (Input.GetButtonDown("Reload"))
+        if (Input.GetButtonDown("Reload") && _reloadCoroutine == null)
         {
-            StartCoroutine(Reloading_Coroutine());
+            _reloadCoroutine = StartCoroutine(Reloading_Coroutine());
         }
     }
 
     private IEnumerator Reloading_Coroutine()
     {
+        Debug.Log("재장전 시작");
+
         yield return new WaitForSeconds(_reloadingTime);
 
         _currentBullet = _maxBullet;
+
+        Debug.Log("재장전 종료");
+        _reloadCoroutine = null;
     }
 
     private void Shoot()
@@ -69,6 +85,9 @@ public class PlayerGunFire : MonoBehaviour
             effect.transform.position = hitInfo.point; // 맞은 자리
             effect.transform.forward = hitInfo.normal; // 수직 위치로 회전
             effect.Play();
+
+            hitInfo.collider.GetComponent<Zombie>()?.TakeDamage(_damage);
+            hitInfo.collider.GetComponent<Drum>()?.Damage(_damage);
         }
     }
 }
