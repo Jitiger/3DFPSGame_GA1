@@ -19,15 +19,20 @@ public enum ZombieState
     Patrol, // 순찰: 처음 자리 주변의 두 지점을 오간다.
 }
 
-public class Zombie : MonoBehaviour
+public class Zombie : MonoBehaviour, IDamageable
 {
     [Header("스탯")]
     [SerializeField] private float _detectDistance = 8; // 플레이어를 발견하는 거리
     [SerializeField] private float _combackDistance = 15; // 처음 자리에서 이만큼 멀어지면 돌아가는 거리
     [SerializeField] private float _attackRange = 1.5f; // 공격 범위
+    [SerializeField] private float _attackDamage = 10f;
     [SerializeField] private float _attackInterval = 1.2f; // 공격 간격
     [SerializeField] private float _moveSpeed = 5; // 이동속도
-    [SerializeField] private float _health = 30;
+    [SerializeField] private float _maxHealth = 30;
+    [SerializeField] private float _health;
+
+    [Header("이펙트")]
+    [SerializeField] private GameObject _bloodSprayPrefab;
 
     [Header("순찰")]
     [SerializeField, Min(0.1f)] private float _patrolDistance = 3f;
@@ -45,11 +50,16 @@ public class Zombie : MonoBehaviour
     private Vector3 _startPosition;
     private GameObject _player;
 
+    public float MaxHealth => _maxHealth;
+    public float Health => _health;
+
 
     private ZombieState _state = ZombieState.Idle;
 
     private void Start()
     {
+        _health = _maxHealth;
+
         _controller = GetComponent<CharacterController>();
         _startPosition = transform.position;
 
@@ -65,6 +75,7 @@ public class Zombie : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.State != GameState.Playing) return;
         switch (_state)
         {
             case ZombieState.Idle:
@@ -90,19 +101,24 @@ public class Zombie : MonoBehaviour
     }
 
     // 대미지를 받는다.
-    public void TakeDamage(float damage)
+    public void TakeDamage(DamageInfo damageInfo)
     {
         if (_state == ZombieState.Death)
         {
             return;
         }
 
-        _health -= damage;
+        _health -= damageInfo.Value;
 
         StopAllCoroutines();
 
         if (_health > 0f)
         {
+            // 좀비의 자식으로 블러드 스프레이를 생성한다.
+            GameObject bloodSpray = Instantiate(_bloodSprayPrefab, transform);
+            bloodSpray.transform.position = damageInfo.HitPoint;
+            bloodSpray.transform.forward = damageInfo.HitNormal;
+
             // 잠깐 멈칫 하고 싶다!
             Debug.Log($"{_state} -> Hit");
             _state = ZombieState.Hit;
@@ -189,11 +205,9 @@ public class Zombie : MonoBehaviour
             return;
         }
 
-        // 한 프레임에 남은 거리보다 더 멀리 가서 목표를 지나치지 않게 한다.
-        float speed = Mathf.Min(_moveSpeed, distanceToPoint / Time.deltaTime);
         direction.Normalize();
         transform.forward = direction;
-        _controller.SimpleMove(direction * speed);
+        _controller.SimpleMove(direction * _moveSpeed);
     }
 
     // 추격: 플레이어를 쫓아간다.
@@ -263,25 +277,17 @@ public class Zombie : MonoBehaviour
         if (_attackTimer >= _attackInterval)
         {
             // Todo. 공격 애니메이션 실행
-            // Todo. 플레이어를 때려!
-            Debug.Log("플레이어를 때렸습니다.");
+
+            DamageInfo info = new DamageInfo()
+            {
+                Value = _attackDamage,
+                HitPoint = _player.transform.position,
+                HitNormal = (transform.position - _player.transform.position).normalized,
+            };
+
+            _player.GetComponent<IDamageable>().TakeDamage(info);
+
             _attackTimer = 0f;
         }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        // 정지 상태에서는 예상 경로, 플레이 중에는 시작 때 정한 경로를 표시한다.
-        Vector3 pointA = Application.isPlaying
-            ? _patrolPointA
-            : transform.position + Vector3.left * _patrolDistance;
-        Vector3 pointB = Application.isPlaying
-            ? _patrolPointB
-            : transform.position + Vector3.right * _patrolDistance;
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(pointA, pointB);
-        Gizmos.DrawWireSphere(pointA, _patrolArrivalDistance);
-        Gizmos.DrawWireSphere(pointB, _patrolArrivalDistance);
     }
 }

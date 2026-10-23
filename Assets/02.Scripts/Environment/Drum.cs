@@ -1,10 +1,9 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 // 체력이 0이 되면 위로 튀어오르며 폭발하는 드럼통
 [RequireComponent(typeof(Rigidbody))]
-public class Drum : MonoBehaviour
+public class Drum : MonoBehaviour, IDamageable
 {
     [SerializeField] private ParticleSystem _explosionEffectPrefab;
 
@@ -13,7 +12,6 @@ public class Drum : MonoBehaviour
     [SerializeField] private float _health = 30f;
     [SerializeField] private float _launchPower = 20f;
     [SerializeField] private float _spinPower = 5f;
-    [FormerlySerializedAs("_destoryDelay")]
     [SerializeField] private float _destroyDelay = 3f;
     [SerializeField] private float _explosionRange = 4.5f;
     [SerializeField] private float _explosionDelay = 0.2f;
@@ -25,14 +23,14 @@ public class Drum : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    public void Damage(float damage)
+    public void TakeDamage(DamageInfo damageInfo)
     {
         if (_health <= 0)
         {
             return;
         }
 
-        _health -= damage;
+        _health -= damageInfo.Value;
 
         if (_health <= 0)
         {
@@ -72,8 +70,14 @@ public class Drum : MonoBehaviour
         // 1. 드럼통과 좀비들에게 대미지를 준다.
         foreach (Collider col in colliders)
         {
-            col.GetComponent<Drum>()?.Damage(_damage);
-            col.GetComponent<Zombie>()?.TakeDamage(_damage);
+            DamageInfo damageInfo = new()
+            {
+                Value = _damage,
+                HitPoint = col.ClosestPoint(transform.position),  // 폭발 중심에서 가장 가까운 콜라이더 표면 위치
+                HitNormal = (transform.position - col.ClosestPoint(transform.position)).normalized
+            };
+
+            col.GetComponent<IDamageable>()?.TakeDamage(damageInfo);
         }
     }
 }

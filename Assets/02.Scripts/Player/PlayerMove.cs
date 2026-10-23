@@ -5,11 +5,13 @@ public class PlayerMove : MonoBehaviour
 {
     private const float Gravity = -20f;
     private const int MaxJumps = 2;
-    private const float MaxStamina = 100f;
+    public const float MaxStamina = 100f;
 
-    private float _yVelocity = 0f;  // 위아래 속도, 매 프레임마다 중력 가속도가 붙는다.
-    private int _jumpCount = 0;   // 점프 횟수
+    private float _yVelocity = 0f; // 위아래 속도, 매 프레임마다 중력 가속도가 붙는다.
+    private int _jumpCount = 0; // 점프 횟수
     private float _stamina = 0f;
+
+    public float Stamina => _stamina;
 
     [Header("스탯")]
     [SerializeField] private float _moveSpeed = 7f;
@@ -23,9 +25,6 @@ public class PlayerMove : MonoBehaviour
     [Header("컴포넌트")]
     [SerializeField] private CharacterController _characterController;
 
-    public float CurrentStamina => _stamina;
-    public float MaximumStamina => MaxStamina;
-
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
@@ -34,6 +33,8 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.State != GameState.Playing) return;
+
         // 0. 스태미나 회복
         _stamina = Mathf.Min(MaxStamina, _stamina + _staminaRecovery * Time.deltaTime);
 
@@ -87,4 +88,3 @@ public class PlayerMove : MonoBehaviour
         _characterController.Move(velocity * Time.deltaTime);
     }
 }
-

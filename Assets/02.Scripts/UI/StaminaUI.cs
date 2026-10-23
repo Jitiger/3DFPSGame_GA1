@@ -18,12 +18,12 @@ public class StaminaUI : MonoBehaviour
         }
 
         _staminaBar.minValue = 0f;
-        _staminaBar.maxValue = _player.MaximumStamina;
+        _staminaBar.maxValue = PlayerMove.MaxStamina;
     }
 
     private void LateUpdate()
     {
-        _staminaBar.value = _player.CurrentStamina;
-        _staminaText.text = $"STAMINA  {Mathf.CeilToInt(_player.CurrentStamina)} / {Mathf.RoundToInt(_player.MaximumStamina)}";
+        _staminaBar.value = _player.Stamina;
+        _staminaText.text = $"STAMINA  {Mathf.CeilToInt(_player.Stamina)} / {Mathf.RoundToInt(PlayerMove.MaxStamina)}";
     }
 }

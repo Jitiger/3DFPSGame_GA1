@@ -13,6 +13,9 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private float _maxBullet = 50f;
     [SerializeField] private float _reloadingTime = 3f;
 
+    [Header("이펙트")]
+    [SerializeField] private ParticleSystem _bloodEffectPrefab;
+
     private float _fireTimer = 0f;
     private float _currentBullet = 0f;
     private Coroutine _reloadCoroutine;
@@ -86,8 +89,12 @@ public class PlayerGunFire : MonoBehaviour
             effect.transform.forward = hitInfo.normal; // 수직 위치로 회전
             effect.Play();
 
-            hitInfo.collider.GetComponent<Zombie>()?.TakeDamage(_damage);
-            hitInfo.collider.GetComponent<Drum>()?.Damage(_damage);
+            DamageInfo damageInfo = new DamageInfo();
+            damageInfo.Value = _damage;
+            damageInfo.HitPoint = hitInfo.point;
+            damageInfo.HitNormal = hitInfo.normal;
+            hitInfo.collider.GetComponent<IDamageable>()?.TakeDamage(damageInfo);
+
         }
     }
 }
