@@ -1,11 +1,11 @@
 using System;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ZombieHealthBar : MonoBehaviour
 {
     [SerializeField] private Slider _slider;
+
     private Zombie _zombie;
 
     private void Awake()
@@ -16,10 +16,9 @@ public class ZombieHealthBar : MonoBehaviour
     private void LateUpdate()
     {
         // 0 ~ 100% -> 0 ~ 1
-        // _slider.value = 좀비의 현재 체력 / 좀비의 최대 체력
         _slider.value = _zombie.Health / _zombie.MaxHealth;
 
-        // 빌보드: 체력바가 카메라를 쳐다보게 한다.
-        transform.forward = Camera.main.transform.forward;
+        // 빌보드: 카메라가 나를 쳐다보게 한다.
+        _slider.transform.forward = Camera.main.transform.forward;
     }
 }
