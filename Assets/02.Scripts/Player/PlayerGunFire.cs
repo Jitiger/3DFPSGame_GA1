@@ -31,7 +31,8 @@ public class PlayerGunFire : MonoBehaviour
         _fireTimer -= Time.deltaTime;
 
         // 1. 마우스 왼쪽 버튼 입력 받기
-        if (Input.GetButton("Fire1") && _fireTimer <= 0f && _currentBullet > 0)
+        bool isMousevisible = Cursor.visible;
+        if (!isMousevisible && Input.GetButton("Fire1") && _fireTimer <= 0f && _currentBullet > 0)
         {
             _currentBullet--;
             _fireTimer = _fireInterval;
@@ -94,7 +95,6 @@ public class PlayerGunFire : MonoBehaviour
             damageInfo.HitPoint = hitInfo.point;
             damageInfo.HitNormal = hitInfo.normal;
             hitInfo.collider.GetComponent<IDamageable>()?.TakeDamage(damageInfo);
-
         }
     }
 }
