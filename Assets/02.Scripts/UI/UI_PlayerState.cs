@@ -32,4 +32,3 @@ public class UI_PlayerState : MonoBehaviour
         _healthSlider.value = _player.Health / _player.MaxHealth;
     }
 }
-

@@ -189,9 +189,9 @@ GameObject:
   - component: {fileID: 1239003389031630650}
   - component: {fileID: 7647809250632266454}
   - component: {fileID: 4780469424966515066}
-  - component: {fileID: 6317099860395816891}
   - component: {fileID: 8807888431042917512}
   - component: {fileID: 4489846309851053475}
+  - component: {fileID: 4998639193739510380}
   m_Layer: 9
   m_Name: Zombie
   m_TagString: Untagged
@@ -296,31 +296,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!143 &6317099860395816891
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3121333545888543756}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8807888431042917512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,8 +308,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37641eb1e44607e46b1816dded1bb921, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Zombie
-  _detectDistance: 8
-  _combackDistance: 15
+  _detectDistance: 10
+  _comebackDistance: 30
   _attackRange: 1.5
   _attackDamage: 10
   _attackInterval: 1.2
@@ -358,6 +333,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZomebieHealthBar
   _slider: {fileID: 5338705197927119937}
+--- !u!195 &4998639193739510380
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3121333545888543756}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0.7
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 0
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &4445164831267854024
 GameObject:
   m_ObjectHideFlags: 0

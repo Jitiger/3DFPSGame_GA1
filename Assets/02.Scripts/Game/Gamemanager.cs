@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using System;
 
 public enum GameState
 {
@@ -19,6 +20,13 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI _stateText;
 
+    private int _remainingZombieCount = 0;
+    private int _maxZombieCount = 0;
+
+    public int RemainingZombieCount => _remainingZombieCount;
+    public int MaxZombieCount => _maxZombieCount;
+
+    public event Action OnZombieCountChanged;
 
     private void Awake()
     {
@@ -55,6 +63,21 @@ public class GameManager : MonoBehaviour
         _stateText.gameObject.SetActive(true);
         _stateText.text = "게임오버";
         _stateText.color = Color.red;
+    }
+
+    public void RegisterZombie()
+    {
+        _remainingZombieCount++;
+        _maxZombieCount++;
+
+        OnZombieCountChanged?.Invoke();
+    }
+
+    public void HandleZombieDied()
+    {
+        _remainingZombieCount--;
+
+        OnZombieCountChanged?.Invoke();
     }
 
 }
