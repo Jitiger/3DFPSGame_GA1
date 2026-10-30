@@ -1,0 +1,4 @@
+칼 lossyScale=(1.14, 1.14, 1.14) pos=(0.30, 0.65, 0.39) 몸중심=(0.20, 0.66, 0.28) 키=1.84
+  Mesh MeshRenderer enabled=True active=True bounds=(1.03, 1.11, 1.11) mat=Universal Render Pipeline/Lit
+  mesh Mesh = 33147
+  tip=(0.31, 0.88, 1.32)

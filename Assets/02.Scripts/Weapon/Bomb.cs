@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // 무언가에 부딪히면 폭발 이펙트를 남기고, 풀에서 다시 사용할 수 있게 비활성화한다.
@@ -6,6 +7,8 @@ public class Bomb : MonoBehaviour
     [SerializeField] private ParticleSystem _explosionEffectPrefab;
     [SerializeField] private float _explosionRange = 4.5f;
     [SerializeField] private float _damage = 100f;
+
+    public event Action OnReturned;
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -22,6 +25,7 @@ public class Bomb : MonoBehaviour
 
         // 목록에는 그대로 남겨두고, 다음에 꺼낼 수 있게 비활성화한다.
         gameObject.SetActive(false);
+        OnReturned?.Invoke();
     }
 
     private void ApplyAreaDamage()

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 846e9ad4722d83c43858ce25c70ba507
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 339622
+  packageName: 'Modern Combat: Grenades & Charms Pack DEMO'
+  packageVersion: 1.0.0
+  assetPath: Assets/DDDexter3D/Modern Combat Grenades & Charms Pack DEMO/Materials/URP/mat_charm_sunglasses_URP.mat
+  uploadId: 805522
