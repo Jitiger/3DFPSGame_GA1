@@ -139,7 +139,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void Restart()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneLoader.Load(SceneManager.GetActiveScene().name);  // 로딩 씬을 지나 다시 불러온다.
     }
 
     // 게임 종료
