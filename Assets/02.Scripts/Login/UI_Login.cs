@@ -271,7 +271,7 @@ public class UI_Login : MonoBehaviour
         ShowLogin();
     }
 
-    // 인증에 성공하면 단말기 화면을 로딩 표시로 덮고, 정해진 시간이 지나면 접속 완료를 띄운다.
+    // 인증에 성공하면 단말기 화면을 로딩 표시로 덮고, 게임 씬을 뒤에서 불러오며 막대를 채운다.
     private IEnumerator ConnectRoutine()
     {
         _isLoading = true;
@@ -288,8 +288,17 @@ public class UI_Login : MonoBehaviour
             _loadingOverlay.SetActive(true);
         }
 
+        // 게임 씬을 뒤에서 불러온다. 다 불러와도 저절로 넘어가지 않게 막아 둔다.
+        AsyncOperation operation = null;
+        if (_loadGameSceneAfterLoading)
+        {
+            Application.backgroundLoadingPriority = ThreadPriority.Low;
+            operation = SceneManager.LoadSceneAsync(_gameSceneName);
+            operation.allowSceneActivation = false;
+        }
+
         float elapsed = 0f;
-        while (elapsed < _loadingSeconds)
+        while (true)
         {
             elapsed += Time.deltaTime;
 
@@ -299,19 +308,28 @@ public class UI_Login : MonoBehaviour
                 _loadingText.text = LoadingLabel + " " + new string('.', dotCount);
             }
 
+            // 불러오기는 0.9에서 멈추므로 0.9를 1로 늘려서 쓴다.
+            float loadRatio = operation == null ? 1f : Mathf.Clamp01(operation.progress / 0.9f);
+
+            // 로드가 금방 끝나도 연출 시간만큼은 천천히 차게, 둘 중 작은 쪽을 따라간다.
+            float timeRatio = Mathf.Clamp01(elapsed / _loadingSeconds);
+            float filled = Mathf.Min(loadRatio, timeRatio);
+
             if (_loadingBarFill != null)
             {
                 Vector2 size = _loadingBarFill.sizeDelta;
-                size.x = LoadingBarWidth * Mathf.Clamp01(elapsed / _loadingSeconds);
+                size.x = LoadingBarWidth * filled;
                 _loadingBarFill.sizeDelta = size;
             }
+
+            if (filled >= 1f) break;
 
             yield return null;
         }
 
-        if (_loadGameSceneAfterLoading)
+        if (operation != null)
         {
-            SceneManager.LoadScene(_gameSceneName);
+            operation.allowSceneActivation = true;  // 막대가 다 찼으니 게임 씬으로 넘어간다.
             yield break;
         }
 
