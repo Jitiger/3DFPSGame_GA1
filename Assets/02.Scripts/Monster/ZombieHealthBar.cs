@@ -6,10 +6,12 @@ public class ZombieHealthBar : MonoBehaviour
     [SerializeField] private Slider _slider;
 
     private Zombie _zombie;
+    private Transform _cameraTransform;
 
     private void Awake()
     {
         _zombie = GetComponent<Zombie>();
+        CacheCamera();
     }
 
     private void OnEnable()
@@ -32,8 +34,17 @@ public class ZombieHealthBar : MonoBehaviour
 
     private void LateUpdate()
     {
-        // 빌보드는 카메라 방향에 맞춰 매 프레임 갱신한다.
-        _slider.transform.forward = Camera.main.transform.forward;
+        // 카메라 참조는 재사용하고 빌보드 방향만 갱신한다.
+        if (_cameraTransform == null) CacheCamera();
+        if (_cameraTransform == null) return;
+
+        _slider.transform.forward = _cameraTransform.forward;
+    }
+
+    private void CacheCamera()
+    {
+        Camera mainCamera = Camera.main;
+        _cameraTransform = mainCamera != null ? mainCamera.transform : null;
     }
 
     private void RefreshHealth()
