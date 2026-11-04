@@ -309,11 +309,7 @@ public class UI_Login : MonoBehaviour
             }
 
             // 불러오기는 0.9에서 멈추므로 0.9를 1로 늘려서 쓴다.
-            float loadRatio = operation == null ? 1f : Mathf.Clamp01(operation.progress / 0.9f);
-
-            // 아직 안 불러온 만큼은 절대 채우지 않고, 금방 끝나도 연출 시간만큼은 천천히 찬다.
-            float timeRatio = Mathf.Clamp01(elapsed / _loadingSeconds);
-            float filled = Mathf.Min(loadRatio, timeRatio);
+            float filled = operation == null ? 1f : Mathf.Clamp01(operation.progress / 0.9f);
 
             if (_loadingBarFill != null)
             {
