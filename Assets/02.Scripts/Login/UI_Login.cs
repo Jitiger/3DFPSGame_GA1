@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,25 +19,11 @@ public class UI_Login : MonoBehaviour
     private const int DotCycle = 3;
     private const float LoadingBarWidth = 240f;
     private const float CaretInterval = 0.5f;
-    private const int IdMinLength = 3;
-    private const int IdMaxLength = 20;
-    private const int PasswordMinLength = 8;
-    private const int PasswordMaxLength = 30;
 
-    // 이메일은 @ 앞뒤에 공백이 없고, 도메인에 점과 두 글자 이상의 끝이 있어야 한다.
-    private static readonly Regex EmailPattern = new Regex(@"^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}\z");
-
-    // 이메일이 아닌 아이디에 쓸 수 있는 글자. 길이는 따로 본다.
-    private static readonly Regex IdPattern = new Regex(@"^[A-Za-z0-9\-@_]+\z");
-
-    // 비밀번호에 쓸 수 있는 글자. 공백을 뺀 출력 가능한 아스키뿐이라 한글은 걸러진다.
-    private static readonly Regex PasswordCharsetPattern = new Regex(@"^[\x21-\x7E]+\z");
-
-    // 어떤 조건이 빠졌는지 따로 알려주려고 종류별로 나눠 둔다.
-    private static readonly Regex UpperPattern = new Regex(@"[A-Z]");
-    private static readonly Regex LowerPattern = new Regex(@"[a-z]");
-    private static readonly Regex DigitPattern = new Regex(@"[0-9]");
-    private static readonly Regex SymbolPattern = new Regex(@"[^A-Za-z0-9]");
+    // 아이디와 비밀번호 규칙은 Specification 클래스가 들고 있다.
+    // 규칙을 바꿀 때 이 화면을 건드리지 않도록 판정과 안내 문구를 모두 그쪽에 맡긴다.
+    private static readonly AccountIdSpecification IdSpecification = new AccountIdSpecification();
+    private static readonly AccountPasswordSpecification PasswordSpecification = new AccountPasswordSpecification();
 
     // 부팅 로그. 한 글자씩 찍히다가 끝나면 로그인 폼이 올라온다.
     private static readonly string[] BootLines =
@@ -146,14 +131,14 @@ public class UI_Login : MonoBehaviour
                 _messageText.text = "아이디와 비밀번호를 입력해 주세요.";
                 return;
             }
-            if (!IsValidId(id, out string idMessage))
+            if (!IdSpecification.IsSatisfiedBy(id))
             {
-                _messageText.text = idMessage;
+                _messageText.text = IdSpecification.ErrorMessage;
                 return;
             }
-            if (!IsValidPassword(password, out string passwordMessage))
+            if (!PasswordSpecification.IsSatisfiedBy(password))
             {
-                _messageText.text = passwordMessage;
+                _messageText.text = PasswordSpecification.ErrorMessage;
                 return;
             }
             if (password != _registerConfirmation.text)
@@ -211,66 +196,6 @@ public class UI_Login : MonoBehaviour
         {
             _messageText.text = "계정 파일을 읽지 못했습니다. 저장 파일을 확인해주세요.";
         }
-    }
-
-    // 아이디 규칙: 이메일 주소이거나, 영문·숫자·-·@·_만 쓴 3~20자.
-    private static bool IsValidId(string id, out string message)
-    {
-        message = "";
-        if (EmailPattern.IsMatch(id)) return true;
-
-        if (id.Length < IdMinLength || id.Length > IdMaxLength)
-        {
-            message = $"아이디는 이메일 주소이거나 {IdMinLength}~{IdMaxLength}자여야 합니다.";
-            return false;
-        }
-        if (!IdPattern.IsMatch(id))
-        {
-            message = "아이디에는 영문, 숫자, -, @, _만 쓸 수 있습니다.";
-            return false;
-        }
-
-        return true;
-    }
-
-    // 비밀번호 규칙: 한글 없이 대문자·소문자·숫자·기호를 모두 하나 이상 넣은 8~30자.
-    private static bool IsValidPassword(string password, out string message)
-    {
-        if (password.Length < PasswordMinLength || password.Length > PasswordMaxLength)
-        {
-            message = $"비밀번호는 {PasswordMinLength}~{PasswordMaxLength}자로 입력해 주세요.";
-            return false;
-        }
-
-        if (!PasswordCharsetPattern.IsMatch(password))
-        {
-            message = "비밀번호에는 한글이나 공백을 쓸 수 없습니다.";
-            return false;
-        }
-        if (!UpperPattern.IsMatch(password))
-        {
-            message = "비밀번호에 대문자를 하나 이상 넣어 주세요.";
-            return false;
-        }
-        if (!LowerPattern.IsMatch(password))
-        {
-            message = "비밀번호에 소문자를 하나 이상 넣어 주세요.";
-            return false;
-        }
-        if (!DigitPattern.IsMatch(password))
-        {
-            message = "비밀번호에 숫자를 하나 이상 넣어 주세요.";
-            return false;
-        }
-        // 앞에서 글자 종류를 이미 걸렀으므로 영문·숫자가 아니면 전부 기호다.
-        if (!SymbolPattern.IsMatch(password))
-        {
-            message = "비밀번호에 기호를 하나 이상 넣어 주세요.";
-            return false;
-        }
-
-        message = "";
-        return true;
     }
 
     // 지금 잡고 있는 입력칸의 다음(Shift면 이전) 칸으로 커서를 옮긴다. 끝에서는 처음으로 돈다.
