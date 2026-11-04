@@ -5,12 +5,45 @@ public class CameraRotate : MonoBehaviour
 {
     [SerializeField] private float _rotationSpeed = 200f;
 
+    [Header("카메라 반동")]
+    [SerializeField, Min(0f)] private float _recoilPerShot = 1.2f;
+    [SerializeField, Min(0f)] private float _maxRecoil = 4f;
+    [SerializeField, Min(0.01f)] private float _recoilReturnSpeed = 10f;
+
+    private float _recoilOffset;
+
+    public void AddRecoil()
+    {
+        if (!isActiveAndEnabled) return;
+        _recoilOffset = Mathf.Min(_recoilOffset + _recoilPerShot, _maxRecoil);
+        ApplyRotation();
+    }
+
+    private void ApplyRotation()
+    {
+        float pitch = Mathf.Clamp(_accumulationY - _recoilOffset, -90f, 90f);
+        transform.eulerAngles = new Vector3(pitch, _accumulationX, 0f);
+    }
+
+    private void OnDisable()
+    {
+        _recoilOffset = 0f;
+        ApplyRotation();
+    }
+
     private float _accumulationX = 0f; // 좌우   회전 각도
     private float _accumulationY = 0f; // 위아래 회전 각도
 
     private void Update()
     {
-        if (GameManager.Instance.State != GameState.Playing) return;
+        if (GameManager.Instance.State != GameState.Playing)
+        {
+            _recoilOffset = 0f;
+            ApplyRotation();
+            return;
+        }
+
+        _recoilOffset = Mathf.MoveTowards(_recoilOffset, 0f, _recoilReturnSpeed * Time.deltaTime);
 
         // 1. 마우스 입력을 받는다.
         float mouseX = Input.GetAxis("Mouse X");
@@ -24,7 +57,7 @@ public class CameraRotate : MonoBehaviour
         _accumulationY = Mathf.Clamp(_accumulationY, -90, 90);
 
         // 4. 누적한 회전값을 카메라에 적용한다.
-        transform.eulerAngles = new Vector3(_accumulationY, _accumulationX, 0f);
+        ApplyRotation();
 
 
         /*// 3. 그 방향으로 회전 시킨다.

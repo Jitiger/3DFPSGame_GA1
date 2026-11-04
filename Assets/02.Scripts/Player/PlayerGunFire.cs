@@ -136,6 +136,9 @@ public class PlayerGunFire : MonoBehaviour
             damageInfo.HitNormal = hitInfo.normal;
             hitInfo.collider.GetComponent<IDamageable>()?.TakeDamage(damageInfo);
         }
+
+        // 이번 탄환 판정 이후 반동을 적용한다.
+        cameraTransform.GetComponent<CameraRotate>()?.AddRecoil();
     }
 
     private void ShowShotLine(Vector3 endPoint)
