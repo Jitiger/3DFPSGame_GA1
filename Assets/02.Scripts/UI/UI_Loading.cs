@@ -21,8 +21,8 @@ public class UI_Loading : MonoBehaviour
 
         while (operation.isDone == false)
         {
-            Debug.Log(Time.frameCount);
-            Debug.Log(operation.progress);
+            GameLogger.Log(Time.frameCount);
+            GameLogger.Log(operation.progress);
 
             if (operation.progress >= 0.9f)
             {

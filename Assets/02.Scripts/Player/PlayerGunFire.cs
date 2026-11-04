@@ -79,7 +79,7 @@ public class PlayerGunFire : MonoBehaviour
             if (_reloadCoroutine != null)
             {
                 StopCoroutine(_reloadCoroutine);
-                Debug.Log("재장전 취소");
+                GameLogger.Log("재장전 취소");
                 _reloadCoroutine = null;
             }
         }
@@ -93,14 +93,14 @@ public class PlayerGunFire : MonoBehaviour
 
     private IEnumerator Reloading_Coroutine()
     {
-        Debug.Log("재장전 시작");
+        GameLogger.Log("재장전 시작");
 
         yield return new WaitForSeconds(_reloadingTime);
 
         _currentBullet = _maxBullet;
 
         OnBulletChanged?.Invoke(BulletCount, MaxBulletCount);
-        Debug.Log("재장전 종료");
+        GameLogger.Log("재장전 종료");
         _reloadCoroutine = null;
     }
 
@@ -124,7 +124,7 @@ public class PlayerGunFire : MonoBehaviour
         ShowShotLine(endPoint);
         if (isHit)
         {
-            // Debug.Log($"{hitInfo.collider.name}이 총알에 맞았다, 데미지: {_damage}");
+            // GameLogger.Log($"{hitInfo.collider.name}이 총알에 맞았다, 데미지: {_damage}");
             ParticleSystem effect = Instantiate(_hitEffectPrefab);
             effect.transform.position = hitInfo.point; // 맞은 자리
             effect.transform.forward = hitInfo.normal; // 수직 위치로 회전

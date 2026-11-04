@@ -1,3 +1,5 @@
+// 수업용 C# 문법 예제. 빌드에는 포함하지 않는다.
+#if UNITY_EDITOR
 using System.Collections;
 using UnityEngine;
 
@@ -41,3 +43,4 @@ public class CoroutineExample : MonoBehaviour
         Debug.Log("나로호 발사 ~!~!~!~!~!!~~!");
     }
 }
+#endif

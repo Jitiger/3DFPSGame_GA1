@@ -192,7 +192,7 @@ public class Zombie : MonoBehaviour, IDamageable
     {
         // 이전 상태를 정리한 다음 새 상태에 들어간다. 재피격도 다시 Enter한다.
         _currentState.Exit();
-        Debug.Log($"{_state} -> {nextState}");
+        GameLogger.Log($"{_state} -> {nextState}");
         _state = nextState;
         _currentState = _states[nextState];
 

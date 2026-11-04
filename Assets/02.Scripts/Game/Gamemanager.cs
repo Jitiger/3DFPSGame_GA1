@@ -58,8 +58,8 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     private void Update()
     {
-        // Debug.Log($"유니티 흐른 시간: {Time.deltaTime}");
-        // Debug.Log($"실제 흐른 시간: {Time.unscaledDeltaTime}");
+        // GameLogger.Log($"유니티 흐른 시간: {Time.deltaTime}");
+        // GameLogger.Log($"실제 흐른 시간: {Time.unscaledDeltaTime}");
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {

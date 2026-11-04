@@ -1,3 +1,5 @@
+// 수업용 C# 문법 예제. 빌드에는 포함하지 않는다.
+#if UNITY_EDITOR
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -46,3 +48,4 @@ public class ListExample : MonoBehaviour
         ages2.RemoveAt(3); // 제거할 데이터의 위치를 ""
     }
 }
+#endif
